@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from django.http import HttpResponseNotFound
 from django.shortcuts import render
 from photos.models import Photo, PUBLIC
 
@@ -12,3 +13,32 @@ def home(request):
         'photos_list': photos[:5]
     }
     return render(request, 'photos/home.html', context)
+
+
+def detail(request, pk):
+    """
+    Carga la página de detalle de una foto
+    :param request: HttpRequest
+    :param pk: id de la foto
+    :return: HttpResponse
+    """
+    """
+    También podemos utilizar esta sintaxis de recuperació de un objeto:
+    try:
+        photo = Photo.objects.get(pk=pk)
+    except Photo.DoesNotExist:
+        photo = None
+    except Photo.MultipleObjects:
+        photo = None
+    """
+    possible_photos = Photo.objects.filter(pk=pk)
+    # photo = (possible_photos.lenght == 1) ? ossible_photos[0] : null;
+    photo = possible_photos[0] if len(possible_photos) >= 1 else None
+    if photo is not None:
+        # cargar la plantilla de detalle
+        context = {
+            'photo': photo
+        }
+        return render(request, 'photos/detail.html', context)
+    else:
+        return HttpResponseNotFound('No existe la foto')  # 404 not found
