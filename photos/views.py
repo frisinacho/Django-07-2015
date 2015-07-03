@@ -8,9 +8,8 @@ def home(request):
     """
     Esta función devuelve el home de mi página
     """
-    photos = Photo.objects.all()
-    html = '<ul>'
-    for photo in photos:
-        html += '<li>' + photo.name + '</li>'
-    html += '</ul>'
-    return HttpResponse(html)
+    photos = Photo.objects.all().order_by('-created_at')
+    context = {
+        'photos_list': photos[:5]
+    }
+    return render(request, 'photos/home.html', context)
