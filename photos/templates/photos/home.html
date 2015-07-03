@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Bienvenido a Frikr - Como Flickr, pero en friki</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block section %}
+
     <h1>Bienvenido a Frikr</h1>
     <p>Frikr es como Flickr, pero en friki</p>
 
     {% if photos_list|length > 0 %}
         <h2>Últimas fotos publicadas</h2>
         {% for photo in photos_list %}
-            <a href="photos/{{ photo.pk }}">
+            <a href="{% url 'photo_detail' photo.pk %}">
                 <img src="{{ photo.url }}" alt="{{ photo.name }}" height="150">
             </a>
         {% endfor %}
@@ -19,5 +16,4 @@
         ¡Sé el primero en publicar una foto!
     {% endif %}
 
-</body>
-</html>
+{% endblock %}
