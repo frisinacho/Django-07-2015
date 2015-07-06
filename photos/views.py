@@ -34,7 +34,7 @@ def detail(request, pk):
     except Photo.MultipleObjects:
         photo = None
     """
-    possible_photos = Photo.objects.filter(pk=pk)
+    possible_photos = Photo.objects.filter(pk=pk).select_related('owner')
     # photo = (possible_photos.lenght == 1) ? ossible_photos[0] : null;
     photo = possible_photos[0] if len(possible_photos) >= 1 else None
     if photo is not None:
@@ -58,9 +58,11 @@ def create(request):
     if request.method == 'GET':
         form = PhotoForm()
     else:
-        form = PhotoForm(request.POST)
+        photo_with_owner = Photo()
+        photo_with_owner.owner = request.user  # asigno como propietario de la foto, el usuario autenticado
+        form = PhotoForm(request.POST, instance=photo_with_owner)
         if form.is_valid():
-            new_photo = form.save() # Guarda el objeto Photo y me lo devuelve
+            new_photo = form.save()  # Guarda el objeto Photo y me lo devuelve
             form = PhotoForm()
             success_message = 'Guardado con éxito!'
             success_message += '<a href="{0}">'.format(
