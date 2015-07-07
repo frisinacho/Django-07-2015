@@ -40,7 +40,9 @@ class LoginView(View):
         return render(request, 'users/login.html', context)
 
 
-def logout(request):
-    if request.user.is_authenticated():
-        django_logout(request)
-    return redirect('photos_home')
+class LogoutView(View):
+
+    def get(self, request):
+        if request.user.is_authenticated():
+            django_logout(request)
+        return redirect('photos_home')
