@@ -7,6 +7,19 @@ from photos.models import Photo, PUBLIC
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 from django.utils.decorators import method_decorator
+from django.db.models import Q
+
+
+class PhotosQueryset(object):
+
+    def get_photos_queryset(self, request):
+        if not request.user.is_authenticated():  # si no está autenticado
+            photos = Photo.objects.filter(visibility=PUBLIC)
+        elif request.user.is_superuser:  # si es adminsitrador
+            photos = Photo.objects.all()
+        else:
+            photos = Photo.objects.filter(Q(owner=request.user) | Q(visibility=PUBLIC))
+        return photos
 
 
 class HomeView(View):
@@ -22,7 +35,7 @@ class HomeView(View):
         return render(request, 'photos/home.html', context)
 
 
-class DetailView(View):
+class DetailView(View, PhotosQueryset):
 
     def get(self, request, pk):
         """
@@ -40,7 +53,7 @@ class DetailView(View):
         except Photo.MultipleObjects:
             photo = None
         """
-        possible_photos = Photo.objects.filter(pk=pk).select_related('owner')
+        possible_photos = self.get_photos_queryset(request).filter(pk=pk).select_related('owner')
         # photo = (possible_photos.lenght == 1) ? ossible_photos[0] : null;
         photo = possible_photos[0] if len(possible_photos) >= 1 else None
         if photo is not None:
@@ -96,8 +109,21 @@ class CreateView(View):
         return render(request, 'photos/new_photo.html', context)
 
 
+class ListView(View, PhotosQueryset):
 
-
+    def get(self, request):
+        """
+        Devuelve:
+        - Las fotos públicas si el usuario no está autenticado
+        - Las fotos del usuario autenticado o las públicas de otros
+        - Si el usuario es superadminsitrador, todas las fotos
+        :param request: HttpRequest
+        :return: HttpResponse
+        """
+        context = {
+            'photos': self.get_photos_queryset(request)
+        }
+        return render(request, 'photos/photos_list.html', context)
 
 
 
