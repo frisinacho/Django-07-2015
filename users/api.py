@@ -16,9 +16,9 @@ class UserListAPI(GenericAPIView):
 
     def get(self, request):
         users = User.objects.all()
-        self.paginate_queryset(users)
+        self.paginate_queryset(users)  # pagino el resultado
         serializer = UserSerializer(users, many=True)
-        return self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)  # devuelvo una respuesta paginada
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
