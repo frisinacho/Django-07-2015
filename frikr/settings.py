@@ -143,10 +143,13 @@ PROJECT_BADWORDS = [u'Abollao', u'Abrazafarolas', u'Afilasables', u'Analfabestia
 REST_FRAMEWORK = {
     'PAGINATE_BY': 5,  # 5 items por página
     'PAGINATE_BY_PARAM': 'page_size',  # parámetro GET para definir el número de elementos por página
-    'MAX_PAGINATE_BY': 10  # máximo número de elementos por página
+    'MAX_PAGINATE_BY': 10,  # máximo número de elementos por página,
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',  # para JSON
+        'rest_framework.renderers.BrowsableAPIRenderer',  # para API navegable
+        'rest_framework_xml.renderers.XMLRenderer', # para XML
+    )
 }
-
-
 
 
 
