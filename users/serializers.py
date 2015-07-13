@@ -49,7 +49,7 @@ class UserSerializer(serializers.Serializer):
             raise serializers.ValidationError("Ya existe un usuario con ese username")
         # Si estoy actualizando, el nuevo username es diferente al de la instancia (está cambiado el username)
         # y existen usuarios ya registrados con el nuevo username
-        elif self.instance.username != data and len(users) != 0:
+        elif self.instance and self.instance.username != data and len(users) != 0:
             raise serializers.ValidationError("Ya existe un usuario con ese username")
         else:
             return data
